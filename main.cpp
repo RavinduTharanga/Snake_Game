@@ -1,9 +1,7 @@
 #include <iostream>
 #include <ncurses.h>
-
-
-// #include <conio.h>
-// #include <windows.h>
+#include <conio.h>
+#include <windows.h>
 
 using namespace std;
 
@@ -14,6 +12,8 @@ const int width =20;
 int x,y,fruitX,fruitY,score;
 enum eDirection {STOP=0,UP,DOWN,LEFT,RIGHT};
 eDirection dir;
+
+int tailX[100],tailY[100],ntail;
 
 
 void Setup(){
@@ -47,7 +47,13 @@ void Draw(){
             }
             
             else{
-                cout<<" ";
+                bool print = false;
+                for(int k=0;k<ntail;k++){
+                    if(i==tailY[i] && j==tailX[i]){
+                        cout<<"o";
+                        print = true;
+                    }if(!print)cout<<" ";
+                }
             }
 
 
@@ -59,6 +65,7 @@ void Draw(){
 
         cout<<"#";
     }cout<<endl;
+    cout<<"Score"<<score<<endl;
     
 }
 int kbhit(void)
@@ -99,6 +106,20 @@ void Input(){
 }
 
 void Logic(){
+    int prevX = tailX[0];
+    int prevY = tailY[0];
+    tailX[0]=x;
+    tailY[0]=y;
+    int prev2X,prev2Y;
+
+    for(int i=1;i <ntail;i++){
+        prev2X = tailX[i];
+        prev2Y = tailY[i];
+        tailX[i]= prevX;
+        tailY[i]= prevY;
+        prevX= prev2X;
+        prevY= prev2Y;
+    }
 
     switch (dir)
     {
@@ -116,6 +137,17 @@ void Logic(){
         break;
     default:
         break;
+    }
+
+    if(x<0 || x>width || y<0 || y>height){
+        gameOver = true;
+    }
+    if(x==fruitX && y==fruitY){
+        score +=10;
+        fruitX =rand()%width;
+        fruitY =rand()%height;
+        ntail++;
+
     }
 }
 
